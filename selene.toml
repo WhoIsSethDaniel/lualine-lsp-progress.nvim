@@ -1,4 +1,5 @@
-std = "neovim"
+std = "lua51+neovim"
 
 [rules]
 global_usage = "allow"
+shadowing = "allow"
