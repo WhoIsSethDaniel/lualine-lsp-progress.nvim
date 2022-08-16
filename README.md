@@ -32,13 +32,13 @@ require'lualine'.setup{
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
-Plug 'arkav/lualine-lsp-progress'
+Plug 'WhoIsSethDaniel/lualine-lsp-progress'
 ```
 
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
-use 'arkav/lualine-lsp-progress'
+use 'WhoIsSethDaniel/lualine-lsp-progress'
 ```
 
 ## Configuration
