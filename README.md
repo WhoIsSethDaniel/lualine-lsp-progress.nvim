@@ -1,7 +1,7 @@
 # lualine-lsp-progress
 
 Information provided by active lsp clients from the `$/progress` endpoint as a statusline component for
-[lualine.nvim](https://raw.githubusercontent.com/hoob3rt/lualine.nvim).
+[lualine.nvim](https://github.com/nvim-lualine/lualine.nvim).
 
 ## Why?
 
@@ -45,21 +45,22 @@ use 'arkav/lualine-lsp-progress'
 
 ### Configurable items
 
-- Items to display and order
-  - Lsp client name e.g. Rust
-  - Spinner
-  - Progress (individual actions undertaken by the LSP)
-    - Title of action undertaken by LSP e.g. Indexing
-    - Message from Lsp
-    - Percentage complete
-- pre and post items - before each specific lsp item display text
-- Spinner
-  - Symbols
-  - Time between symbol update
-- Color of items
-- Last Message delay
-  - After we receive a progress message saying an action is complete **delay** removing it from lualine so we can read that it's finished.
-  - After the final progress message is displayed **delay** before no longer showing the lsp client name.
+-   Items to display and order
+    -   Lsp client name e.g. Rust
+    -   Spinner
+    -   Progress (individual actions undertaken by the LSP)
+        -   Title of action undertaken by LSP e.g. Indexing
+        -   Message from Lsp
+        -   Percentage complete
+-   pre and post items - before each specific lsp item display text
+-   Spinner
+    -   Symbols
+    -   Time between symbol update
+-   Color of items
+-   Last Message delay
+    -   After we receive a progress message saying an action is complete **delay** removing it from lualine so we can read that
+        it's finished.
+    -   After the final progress message is displayed **delay** before no longer showing the lsp client name.
 
 ### Decked out configuration
 
