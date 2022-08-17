@@ -185,8 +185,14 @@ LspProgress.update_progress = function(self)
   end
   if #result > 0 then
     self.progress_message = table.concat(result, options.separators.component)
+    if self.timer and self.timer:get_repeat() == 0 then
+      self.timer:set_repeat(self.options.timer.spinner)
+    end
   else
     self.progress_message = ''
+    if self.timer then
+      self.timer:set_repeat(0)
+    end
   end
 end
 
@@ -220,8 +226,8 @@ LspProgress.setup_spinner = function(self)
   self.spinner.index = 0
   self.spinner.symbol_mod = #self.options.spinner_symbols
   self.spinner.symbol = self.options.spinner_symbols[1]
-  local timer = vim.loop.new_timer()
-  timer:start(
+  self.timer = vim.loop.new_timer()
+  self.timer:start(
     0,
     self.options.timer.spinner,
     vim.schedule_wrap(function()
