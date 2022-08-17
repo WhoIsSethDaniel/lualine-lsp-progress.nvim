@@ -28,12 +28,14 @@ LspProgress.default = {
   spinner_symbols_square = { '▙ ', '▛ ', '▜ ', '▟ ' },
   spinner_symbols = { '▙ ', '▛ ', '▜ ', '▟ ' },
   message = { commenced = 'In Progress', completed = 'Completed' },
+  max_message_length = 30,
 }
 
 -- Initializer
 LspProgress.init = function(self, options)
   LspProgress.super.init(self, options)
 
+  self.options.max_message_length = self.options.max_message_length or LspProgress.default.max_message_length
   self.options.colors = vim.tbl_extend('force', LspProgress.default.colors, self.options.colors or {})
   self.options.separators = vim.tbl_deep_extend('force', LspProgress.default.separators, self.options.separators or {})
   self.options.display_components = self.options.display_components or LspProgress.default.display_components
@@ -105,7 +107,11 @@ LspProgress.register_progress = function(self)
         progress.percentage = msg.percentage
       end
       if msg.message then
-        progress.message = msg.message
+        if string.len(msg.message) > self.options.max_message_length then
+          progress.message = string.sub(msg.message, 0, self.options.max_message_length) .. '...'
+        else
+          progress.message = msg.message
+        end
       end
       if msg.done then
         if progress.percentage then
