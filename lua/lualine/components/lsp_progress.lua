@@ -185,13 +185,14 @@ LspProgress.update_progress = function(self)
   end
   if #result > 0 then
     self.progress_message = table.concat(result, options.separators.component)
-    if self.timer and self.timer:get_repeat() == 0 then
-      self.timer:set_repeat(self.options.timer.spinner)
+    if not self.timer then
+      self:setup_spinner()
     end
   else
     self.progress_message = ''
     if self.timer then
-      self.timer:set_repeat(0)
+      self.timer:stop()
+      self.timer = nil
     end
   end
 end
