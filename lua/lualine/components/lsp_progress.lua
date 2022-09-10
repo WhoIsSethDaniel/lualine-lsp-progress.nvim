@@ -138,7 +138,11 @@ LspProgress.register_progress = function(self)
       end
     end
   end
-  vim.api.nvim_create_autocmd('User LspProgressUpdate', {
+
+  local gid = vim.api.nvim_create_augroup('LualineLspProgressEvent', { clear = true })
+  vim.api.nvim_create_autocmd('User', {
+    group = gid,
+    pattern = { 'LspProgressUpdate' },
     callback = function()
       self.progress_callback(vim.lsp.util.get_progress_messages())
     end,
