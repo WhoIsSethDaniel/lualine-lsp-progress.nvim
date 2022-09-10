@@ -3,6 +3,8 @@
 Information provided by active lsp clients from the `$/progress` endpoint as a statusline component for
 [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim).
 
+This is a fork of the excellent, but currently unmaintained [lualine-lsp-progress](https://github.com/arkav/lualine-lsp-progress).
+
 ## Why?
 
 Some LSP servers take a while to initialize. This provides a nice visual indicator to show which clients are ready to use.
@@ -65,7 +67,6 @@ use 'WhoIsSethDaniel/lualine-lsp-progress'
 ### Decked out configuration
 
 ```lua
-
 -- Color for highlights
 local colors = {
   yellow = '#ECBE7B',
@@ -76,37 +77,36 @@ local colors = {
   violet = '#a9a1e1',
   magenta = '#c678dd',
   blue = '#51afef',
-  red = '#ec5f67'
+  red = '#ec5f67',
 }
 
 local config = {
   options = {
     icons_enabled = true,
     theme = 'gruvbox',
-    component_separators = {'', ''},
-    section_separators = {'', ''},
-    disabled_filetypes = {}
+    component_separators = { '', '' },
+    section_separators = { '', '' },
+    disabled_filetypes = {},
   },
   sections = {
-    lualine_a = {'mode'},
-    lualine_b = {'filename'},
+    lualine_a = { 'mode' },
+    lualine_b = { 'filename' },
     lualine_c = {},
     lualine_x = {},
-    lualine_y = {'encoding', 'fileformat', 'filetype'},
-    lualine_z = {'branch'},
+    lualine_y = { 'encoding', 'fileformat', 'filetype' },
+    lualine_z = { 'branch' },
   },
   inactive_sections = {
     lualine_a = {},
     lualine_b = {},
-    lualine_c = {'filename'},
-    lualine_x = {'location'},
+    lualine_c = { 'filename' },
+    lualine_x = { 'location' },
     lualine_y = {},
-    lualine_z = {}
+    lualine_z = {},
   },
   tabline = {},
-  extensions = {}
+  extensions = {},
 }
-
 
 -- Inserts a component in lualine_c in left section
 local function ins_left(component)
@@ -121,9 +121,9 @@ end
 ins_left {
   'lsp_progress',
   colors = {
-    percentage  = colors.cyan,
-    title  = colors.cyan,
-    message  = colors.cyan,
+    percentage = colors.cyan,
+    title = colors.cyan,
+    message = colors.cyan,
     spinner = colors.cyan,
     lsp_client_name = colors.magenta,
     use = true,
@@ -131,7 +131,7 @@ ins_left {
   separators = {
     component = ' ',
     progress = ' | ',
-    message = { pre = '(', post = ')'},
+    message = { pre = '(', post = ')' },
     percentage = { pre = '', post = '%% ' },
     title = { pre = '', post = ': ' },
     lsp_client_name = { pre = '[', post = ']' },
@@ -143,5 +143,4 @@ ins_left {
   message = { commenced = 'In Progress', completed = 'Completed' },
   max_message_length = 30,
 }
-
 ```
