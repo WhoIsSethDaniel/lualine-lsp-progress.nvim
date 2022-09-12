@@ -34,13 +34,13 @@ require'lualine'.setup{
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
-Plug 'WhoIsSethDaniel/lualine-lsp-progress'
+Plug 'WhoIsSethDaniel/lualine-lsp-progress.nvim'
 ```
 
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
-use 'WhoIsSethDaniel/lualine-lsp-progress'
+use 'WhoIsSethDaniel/lualine-lsp-progress.nvim'
 ```
 
 ## Configuration
