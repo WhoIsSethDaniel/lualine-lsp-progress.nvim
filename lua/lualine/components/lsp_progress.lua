@@ -27,7 +27,7 @@ LspProgress.default = {
   spinner_symbols_moon = { '🌑 ', '🌒 ', '🌓 ', '🌔 ', '🌕 ', '🌖 ', '🌗 ', '🌘 ' },
   spinner_symbols_square = { '▙ ', '▛ ', '▜ ', '▟ ' },
   spinner_symbols = { '▙ ', '▛ ', '▜ ', '▟ ' },
-  message = { commenced = 'In Progress', completed = 'Completed' },
+  message = { initializing = 'Initializing…', commenced = 'In Progress', completed = 'Completed' },
   max_message_length = 30,
 }
 
@@ -84,6 +84,22 @@ end
 LspProgress.update_status = function(self)
   self:update_progress()
   return self.progress_message
+end
+
+LspProgress.generate_client_messages_on_attach = function(self)
+  local msgs = {}
+
+  for _, active_client in ipairs(vim.lsp.get_active_clients()) do
+    client_message = {
+      done = false,
+      name = active_client.name,
+      progress = true,
+      title = self.options.message.initializing,
+    }
+    table.insert(msgs, client_message)
+  end
+
+  return msgs
 end
 
 LspProgress.register_progress = function(self)
@@ -145,6 +161,12 @@ LspProgress.register_progress = function(self)
     pattern = { 'LspProgressUpdate' },
     callback = function()
       self.progress_callback(vim.lsp.util.get_progress_messages())
+    end,
+  })
+  vim.api.nvim_create_autocmd('LspAttach', {
+    group = gid,
+    callback = function()
+      self.progress_callback(self:generate_client_messages_on_attach())
     end,
   })
 end
