@@ -86,22 +86,6 @@ LspProgress.update_status = function(self)
   return self.progress_message
 end
 
-LspProgress.generate_client_messages_on_attach = function(self)
-  local msgs = {}
-
-  for _, active_client in ipairs(vim.lsp.get_active_clients()) do
-    client_message = {
-      done = false,
-      name = active_client.name,
-      progress = true,
-      title = self.options.message.initializing,
-    }
-    table.insert(msgs, client_message)
-  end
-
-  return msgs
-end
-
 LspProgress.register_progress = function(self)
   self.clients = {}
 
@@ -163,10 +147,30 @@ LspProgress.register_progress = function(self)
       self.progress_callback(vim.lsp.util.get_progress_messages())
     end,
   })
+
+  local cached_attached = {}
   vim.api.nvim_create_autocmd('LspAttach', {
     group = gid,
-    callback = function()
-      self.progress_callback(self:generate_client_messages_on_attach())
+    callback = function(args)
+      local client_id = args.data.client_id
+      if cached_attached[client_id] == nil then
+        cached_attached[client_id] = true
+        self.progress_callback {
+          {
+            done = false,
+            name = vim.lsp.get_client_by_id(client_id).name,
+            progress = true,
+            title = self.options.message.initializing,
+          },
+        }
+      end
+    end,
+  })
+  vim.api.nvim_create_autocmd('LspDetach', {
+    group = gid,
+    callback = function(args)
+      local client_id = args.data.client_id
+      cached_attached[client_id] = nil
     end,
   })
 end
