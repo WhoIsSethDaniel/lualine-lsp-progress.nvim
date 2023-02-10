@@ -21,6 +21,8 @@ LspProgress.default = {
     lsp_client_name = { pre = '[', post = ']' },
     spinner = { pre = '', post = '' },
   },
+  hide = {},
+  only_show_attached = false,
   display_components = { 'lsp_client_name', 'spinner', { 'title', 'percentage', 'message' } },
   timer = { progress_enddelay = 500, spinner = 500, lsp_client_name_enddelay = 1000 },
   spinner_symbols_dice = { ' ', ' ', ' ', ' ', ' ', ' ' }, -- Nerd fonts needed
@@ -90,6 +92,14 @@ LspProgress.suppress_server = function(self, name)
   if vim.tbl_contains(self.options.hide or {}, name) then
     return true
   end
+  if self.options.only_show_attached then
+    local clients = vim.tbl_map(function(c)
+      return c.name
+    end, vim.lsp.get_active_clients { bufnr = vim.api.nvim_get_current_buf() })
+    if not vim.tbl_contains(clients, name) then
+      return true
+    end
+  end
   return false
 end
 
@@ -100,7 +110,9 @@ LspProgress.register_progress = function(self)
     for _, msg in ipairs(msgs) do
       local client_name = msg.name
 
-      if not self:suppress_server(client_name) then
+      if self:suppress_server(client_name) then
+        self.clients[client_name] = nil
+      else
         if self.clients[client_name] == nil then
           self.clients[client_name] = { progress = {}, name = client_name }
         end
