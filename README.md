@@ -87,6 +87,7 @@ local config = {
     component_separators = { '', '' },
     section_separators = { '', '' },
     disabled_filetypes = {},
+    hide = { 'null-ls', 'pyright' },
   },
   sections = {
     lualine_a = { 'mode' },
