@@ -86,6 +86,13 @@ LspProgress.update_status = function(self)
   return self.progress_message
 end
 
+LspProgress.suppress_server = function(self, name)
+  if vim.tbl_contains(self.options.hide or {}, name) then
+    return true
+  end
+  return false
+end
+
 LspProgress.register_progress = function(self)
   self.clients = {}
 
@@ -93,48 +100,50 @@ LspProgress.register_progress = function(self)
     for _, msg in ipairs(msgs) do
       local client_name = msg.name
 
-      if self.clients[client_name] == nil then
-        self.clients[client_name] = { progress = {}, name = client_name }
-      end
-
-      local progress = self.clients[client_name].progress
-
-      progress.message = self.options.message.commenced
-      if msg.title then
-        progress.title = msg.title
-      end
-      if msg.percentage then
-        progress.percentage = msg.percentage
-      end
-      if msg.message then
-        if string.len(msg.message) > self.options.max_message_length then
-          progress.message = string.sub(msg.message, 0, self.options.max_message_length) .. '...'
-        else
-          progress.message = msg.message
+      if not self:suppress_server(client_name) then
+        if self.clients[client_name] == nil then
+          self.clients[client_name] = { progress = {}, name = client_name }
         end
-      end
-      if msg.done then
-        if progress.percentage then
-          progress.percentage = '100'
+
+        local progress = self.clients[client_name].progress
+
+        progress.message = self.options.message.commenced
+        if msg.title then
+          progress.title = msg.title
         end
-        progress.message = self.options.message.completed
-        vim.defer_fn(function()
-          if self.clients[client_name] then
-            self.clients[client_name].progress = {}
+        if msg.percentage then
+          progress.percentage = msg.percentage
+        end
+        if msg.message then
+          if string.len(msg.message) > self.options.max_message_length then
+            progress.message = string.sub(msg.message, 0, self.options.max_message_length) .. '...'
+          else
+            progress.message = msg.message
           end
+        end
+        if msg.done then
+          if progress.percentage then
+            progress.percentage = '100'
+          end
+          progress.message = self.options.message.completed
           vim.defer_fn(function()
-            local has_items = false
-            if self.clients[client_name] and self.clients[client_name].progress then
-              for _, _ in pairs(self.clients[client_name].progress) do
-                has_items = true
-                break
+            if self.clients[client_name] then
+              self.clients[client_name].progress = {}
+            end
+            vim.defer_fn(function()
+              local has_items = false
+              if self.clients[client_name] and self.clients[client_name].progress then
+                for _, _ in pairs(self.clients[client_name].progress) do
+                  has_items = true
+                  break
+                end
               end
-            end
-            if has_items == false then
-              self.clients[client_name] = nil
-            end
-          end, self.options.timer.lsp_client_name_enddelay)
-        end, self.options.timer.progress_enddelay)
+              if has_items == false then
+                self.clients[client_name] = nil
+              end
+            end, self.options.timer.lsp_client_name_enddelay)
+          end, self.options.timer.progress_enddelay)
+        end
       end
     end
   end
