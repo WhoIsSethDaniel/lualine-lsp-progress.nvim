@@ -87,7 +87,6 @@ local config = {
     component_separators = { '', '' },
     section_separators = { '', '' },
     disabled_filetypes = {},
-    hide = { 'null-ls', 'pyright' },
   },
   sections = {
     lualine_a = { 'mode' },
@@ -138,6 +137,14 @@ ins_left {
     lsp_client_name = { pre = '[', post = ']' },
     spinner = { pre = '', post = '' },
   },
+  -- never show status for this list of servers;
+  -- can be useful if your LSP server does not emit
+  -- status messages
+  hide = { 'null-ls', 'pyright' },
+  -- by default this is false. If set to true will
+  -- only show the status of LSP servers attached
+  -- to the currently active buffer
+  only_show_attached = true,
   display_components = { 'lsp_client_name', 'spinner', { 'title', 'percentage', 'message' } },
   timer = { progress_enddelay = 500, spinner = 1000, lsp_client_name_enddelay = 1000 },
   spinner_symbols = { '🌑 ', '🌒 ', '🌓 ', '🌔 ', '🌕 ', '🌖 ', '🌗 ', '🌘 ' },
