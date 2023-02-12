@@ -92,14 +92,6 @@ LspProgress.suppress_server = function(self, name)
   if vim.tbl_contains(self.options.hide or {}, name) then
     return true
   end
-  if self.options.only_show_attached then
-    local clients = vim.tbl_map(function(c)
-      return c.name
-    end, vim.lsp.get_active_clients { bufnr = vim.api.nvim_get_current_buf() })
-    if not vim.tbl_contains(clients, name) then
-      return true
-    end
-  end
   return false
 end
 
@@ -200,37 +192,52 @@ LspProgress.update_progress = function(self)
   local options = self.options
   local result = {}
 
+  local attached = vim.tbl_map(function(c)
+    return c.name
+  end, vim.lsp.get_active_clients { bufnr = vim.api.nvim_get_current_buf() })
   for _, client in pairs(self.clients) do
     for _, display_component in pairs(self.options.display_components) do
-      if display_component == 'lsp_client_name' then
-        if options.colors.use then
-          table.insert(
-            result,
-            highlight.component_format_highlight(self.highlights.lsp_client_name)
-              .. options.separators.lsp_client_name.pre
-              .. client.name
-              .. options.separators.lsp_client_name.post
-          )
-        else
-          table.insert(
-            result,
-            options.separators.lsp_client_name.pre .. client.name .. options.separators.lsp_client_name.post
-          )
+      local display_client = true
+      if self.options.only_show_attached then
+        if not vim.tbl_contains(attached, client.name) then
+          display_client = false
         end
-      elseif display_component == 'spinner' then
-        if options.colors.use then
-          table.insert(
-            result,
-            highlight.component_format_highlight(self.highlights.spinner)
-              .. options.separators.spinner.pre
-              .. self.spinner.symbol
-              .. options.separators.spinner.post
-          )
-        else
-          table.insert(result, options.separators.spinner.pre .. self.spinner.symbol .. options.separators.spinner.post)
+      end
+
+      if display_client then
+        if display_component == 'lsp_client_name' then
+          if options.colors.use then
+            table.insert(
+              result,
+              highlight.component_format_highlight(self.highlights.lsp_client_name)
+                .. options.separators.lsp_client_name.pre
+                .. client.name
+                .. options.separators.lsp_client_name.post
+            )
+          else
+            table.insert(
+              result,
+              options.separators.lsp_client_name.pre .. client.name .. options.separators.lsp_client_name.post
+            )
+          end
+        elseif display_component == 'spinner' then
+          if options.colors.use then
+            table.insert(
+              result,
+              highlight.component_format_highlight(self.highlights.spinner)
+                .. options.separators.spinner.pre
+                .. self.spinner.symbol
+                .. options.separators.spinner.post
+            )
+          else
+            table.insert(
+              result,
+              options.separators.spinner.pre .. self.spinner.symbol .. options.separators.spinner.post
+            )
+          end
+        elseif type(display_component) == 'table' then
+          self:update_progress_components(result, display_component, client.progress)
         end
-      elseif type(display_component) == 'table' then
-        self:update_progress_components(result, display_component, client.progress)
       end
     end
   end
