@@ -24,7 +24,7 @@ LspProgress.default = {
   hide = {},
   only_show_attached = false,
   display_components = { 'lsp_client_name', 'spinner', { 'title', 'percentage', 'message' } },
-  timer = { progress_enddelay = 500, spinner = 500, lsp_client_name_enddelay = 1000 },
+  timer = { progress_enddelay = 500, spinner = 500, lsp_client_name_enddelay = 1000, attached_delay = 3000 },
   spinner_symbols_dice = { ' ', ' ', ' ', ' ', ' ', ' ' }, -- Nerd fonts needed
   spinner_symbols_moon = { '🌑 ', '🌒 ', '🌓 ', '🌔 ', '🌕 ', '🌖 ', '🌗 ', '🌘 ' },
   spinner_symbols_square = { '▙ ', '▛ ', '▜ ', '▟ ' },
@@ -109,6 +109,10 @@ LspProgress.register_progress = function(self)
           self.clients[client_name] = { progress = {}, name = client_name }
         end
 
+        if self.clients[client_name].attach_timer then
+          vim.loop.timer_stop(self.clients[client_name].attach_timer)
+        end
+
         local progress = self.clients[client_name].progress
 
         progress.message = self.options.message.commenced
@@ -168,14 +172,25 @@ LspProgress.register_progress = function(self)
       local client_id = args.data.client_id
       if cached_attached[client_id] == nil then
         cached_attached[client_id] = true
+        local name = vim.lsp.get_client_by_id(client_id).name
         self.progress_callback {
           {
             done = false,
-            name = vim.lsp.get_client_by_id(client_id).name,
+            name = name,
             progress = true,
             title = self.options.message.initializing,
           },
         }
+        if self.clients[name] then
+          self.clients[name].attach_timer = vim.defer_fn(function()
+            self.progress_callback {
+              {
+                done = true,
+                name = name,
+              },
+            }
+          end, self.options.timer.attached_delay)
+        end
       end
     end,
   })
