@@ -146,7 +146,12 @@ ins_left {
   -- to the currently active buffer
   only_show_attached = true,
   display_components = { 'lsp_client_name', 'spinner', { 'title', 'percentage', 'message' } },
-  timer = { progress_enddelay = 500, spinner = 1000, lsp_client_name_enddelay = 1000 },
+  timer = {
+    progress_enddelay = 500,
+    spinner = 1000,
+    lsp_client_name_enddelay = 1000,
+    attached_delay = 3000,
+  },
   spinner_symbols = { '🌑 ', '🌒 ', '🌓 ', '🌔 ', '🌕 ', '🌖 ', '🌗 ', '🌘 ' },
   message = { initializing = 'Initializing…', commenced = 'In Progress', completed = 'Completed' },
   max_message_length = 30,
