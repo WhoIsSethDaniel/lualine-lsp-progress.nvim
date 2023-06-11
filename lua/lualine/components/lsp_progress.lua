@@ -157,13 +157,32 @@ LspProgress.register_progress = function(self)
   end
 
   local gid = vim.api.nvim_create_augroup('LualineLspProgressEvent', { clear = true })
-  vim.api.nvim_create_autocmd('User', {
-    group = gid,
-    pattern = { 'LspProgressUpdate' },
-    callback = function()
-      self.progress_callback(vim.lsp.util.get_progress_messages())
-    end,
-  })
+  if vim.fn.has 'nvim-0.10' == 1 then
+    vim.api.nvim_create_autocmd('LspProgress', {
+      group = gid,
+      callback = function(data)
+        local value = data.data.result.value
+        local msgs = {
+          {
+            message = value.message,
+            percentage = value.percentage,
+            title = value.title,
+            name = vim.lsp.get_client_by_id(data.data.client_id).name,
+            done = value.kind == 'end',
+          },
+        }
+        self.progress_callback(msgs)
+      end,
+    })
+  else
+    vim.api.nvim_create_autocmd('User', {
+      group = gid,
+      pattern = { 'LspProgressUpdate' },
+      callback = function()
+        self.progress_callback(vim.lsp.util.get_progress_messages())
+      end,
+    })
+  end
 
   local cached_attached = {}
   vim.api.nvim_create_autocmd('LspAttach', {
