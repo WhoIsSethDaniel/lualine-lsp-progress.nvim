@@ -1,3 +1,8 @@
+# ARCHIVED
+
+This repository is archived and no longer being updated. For a similar plugin please see
+[lsp-progress.nvim](https://github.com/linrongbin16/lsp-progress.nvim).
+
 # lualine-lsp-progress
 
 Information provided by active lsp clients from the `$/progress` endpoint as a statusline component for
